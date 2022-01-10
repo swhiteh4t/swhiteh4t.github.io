@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --accent-color: #FF4D4D;
+        }
+    </style>
+
+    
+    
+    
+    
+    
+    
+
+    
+    <title>Introduction to testing cryptographic modules with AES encryption</title>
+    <meta name="description" content="In this post I will try to ilustrate the different tests and criteria that I use to test the cryptographic algorithms">
+    <meta name="keywords" content='Symmetric Encryption, Testing, Crytography, AES'>
+
+    <meta property="og:url" content="/posts/testing_crypto_modules/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Introduction to testing cryptographic modules with AES encryption">
+    <meta property="og:description" content="In this post I will try to ilustrate the different tests and criteria that I use to test the cryptographic algorithms">
+    <meta property="og:image" content="/images/avatar.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Introduction to testing cryptographic modules with AES encryption">
+    <meta name="twitter:description" content="In this post I will try to ilustrate the different tests and criteria that I use to test the cryptographic algorithms">
+    <meta property="twitter:domain" content="/posts/testing_crypto_modules/">
+    <meta property="twitter:url" content="/posts/testing_crypto_modules/">
+    <meta name="twitter:image" content="/images/avatar.jpg">
+
+    
+    <link rel="canonical" href="/posts/testing_crypto_modules/" />
+
+    <link rel="stylesheet" type="text/css" href="/css/normalize.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link disabled id="dark-theme" rel="stylesheet" href="/css/dark.css">
+
+    <script src="/js/svg-injector.min.js"></script>
+    <script src="/js/feather-icons.min.js"></script>
+    <script src="/js/main.js"></script>
+
+    
+    
+</head>
+<body>
+        <script type="text/javascript">
+            
+            setThemeByUserPref();
+        </script><header class="header">
+    <nav class="header-nav">
+
+        
+        <div class="avatar">
+            <a href="/">
+                <img src="/images/avatar.jpg" alt="avatar" />
+            </a>
+        </div>
+        
+
+        <div class="nav-title">
+            <a class="nav-brand" href="/">SWHITEH4T</a>
+        </div>
+
+        <div class="nav-links">
+            
+            <div class="nav-link">
+                <a href="/posts/"> Posts </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="/tags/"> Tags </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="/aboutme/"> About me </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="https://github.com/swhiteh4t"><span data-feather='github'></span>  </a>
+            </div>
+            
+
+            <span class="nav-icons-divider"></span>
+            <div class="nav-link dark-theme-toggle">
+                <a>
+                    <span id="theme-toggle-icon" data-feather="moon"></span>
+                </a>
+            </div>
+
+            <div class="nav-link" id="hamburger-menu-toggle">
+                <a>
+                    <span data-feather="menu"></span>
+                </a>
+            </div>
+
+            
+            <ul class="nav-hamburger-list visibility-hidden">
+                
+                <li class="nav-item">
+                    <a href="/posts/"> Posts </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="/tags/"> Tags </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="/aboutme/"> About me </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="https://github.com/swhiteh4t"><span data-feather='github'></span>  </a>
+                </li>
+                
+                <li class="nav-item dark-theme-toggle">
+                    <a>
+                        <span id="theme-toggle-icon" data-feather="moon"></span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+<main id="content">
+    <div class="post container">
+
+    <div class="post-header-section">
+        <h1>Introduction to testing cryptographic modules with AES encryption</h1>
+        <small role="doc-subtitle">In this post I will try to ilustrate the different tests and criteria that I use to test the cryptographic algorithms</small>
+        <p class="post-date">
+            January 5, 2022
+        </p>
+
+        <ul class="post-tags">
+        
+            <li class="post-tag"><a href="/tags/symmetric-encryption">Symmetric Encryption</a></li>
+        
+            <li class="post-tag"><a href="/tags/testing">Testing</a></li>
+        
+            <li class="post-tag"><a href="/tags/crytography">Crytography</a></li>
+        
+            <li class="post-tag"><a href="/tags/aes">AES</a></li>
+        
+        </ul>
+    </div>
+
+    <div class="post-content">
+        <p>
+            <p><em>Disclaimer: I am not a FIPS evaluator, obviously this will not give you any FIPS certification nor the assurance that comes from that. If you really want to be sure that your system comply with this standard go and pay for it. This is just based on my experience</em></p>
+<p>In this post, I will make an overview on the different tests and criteria that I personally use to validate on cryptographic algorithms.
+First of all, we should understand that there exists a great variety of test, i.e Known Answer Tests or Montecarlo Tests, some of them are valid for block ciphers algorithms and some of them might not be useful at all, so we should choose the correct one for our specification. For example,
+there is no point on appling an statistical test of randomness to a deterministic block cipher algorithm or a Known Answer Test (KAT) to a random number generator algorithm. Given the different times of cyptographic functions I divided this post in four sections:  <strong>the standard, block ciphers, stream ciphers, hash functions and key exchange functions.</strong></p>
+<p><em>In case the you have any doubt on how to implement cryptographic algorithms, there is a repository called &ldquo;Cryptography&rdquo; in my github where you will found the low-lever python implementation of algorithms
+like RSA, ECC, DH and AES. The link to my github is in the header of these webpage. Having said this, let&rsquo;s start with the post.</em></p>
+<h2 id="the-standard---fips-140">The standard - FIPS 140</h2>
+<p>The 140 series of Federal Information Processing Standards (FIPS) are U.S. government computer security standards that specify requirements for cryptography modules. <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> The National Institute of Standards and Technology (NIST) issues the 140 Publication Series to coordinate the requirements and standards for cryptographic modules which include both hardware and software components for use by departments and agencies of the United States federal government. FIPS 140 does not purport to provide sufficient conditions to guarantee that a module conforming to its requirements is secure, still less that a system built using such modules is secure. The requirements cover not only the cryptographic modules themselves but also their documentation and (at the highest security level) some aspects of the comments contained in the source code. I use as the main source of information for these post and all the posts
+realted to these topics, the FIPS standards such as the Advanced Encryption Standard (AES) FIPS - 147 or SECURITY REQUIREMENTS FOR CRYPTOGRAPHIC MODULES FIPS - 140.</p>
+<p><em>Just to clarify again I am not a FIPS expert nor a FIPS validator so by no means you can assume the FIPS&rsquo;s certification by this post</em></p>
+<h2 id="block-ciphers">Block ciphers</h2>
+<p>According to Wikipedia, a block cipher is a deterministic algorithm operating on fixed-length groups of bits, called blocks along with a symmetric key. It means that given a particular input
+it will always produce the same output, as long as the algorithm is implemented in the correct way. The determinism of the algorithm sounds like a job for the KAT, Known Answers Test, which are a know results for different chiper algorithms given a particular input. We give the algorithm an input that we know that will produce a particular output and then we compare it we the result of our implementation, fulfilling the principle of: <em><strong>given a particular input produces the same output</strong></em></p>
+<p>In addition, we should perform Monte Carlo Tests which use as input pseudo random data to verify that the algorithm has not been built to fulfill the specific tests. This was known a long time ago in the old times were DES (Data Encryption Standard) was considered secure and now reinvented to TDES (Triples DES), nowadays the full 16 rounds of DES could be broken using non brute-force algorithms <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> . The NBS did know the problem associated with KAT test back then and publish in 1980 the <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nbsspecialpublication500-20e1980.pdf">NBS Special Publication 500-20, Validating the Correctness of Hardware Implementations of the NBS Data Encryption Standard</a>, which says the following:</p>
+<blockquote>
+<p>Since the test set is known to all, an additional
+series of tests is performed using pseudo-random data to
+verify that the device has not been designed just to pass
+the test set. In addition a successful series of Monte Carlo
+tests give some assurance that an anomalous combination of
+inputs does not exist that would cause the device to hang or
+otherwise malfunction for reasons not directly due to the
+implementation of the algorithm. While the purpose of the
+DES test set is to insure that the commercial device performs the DES algorithm accurately, the Monte Carlo test is
+needed to provide assurance that the commercial device was
+not built expressly to satisfy the announced tests. <strong>page 22</strong></p>
+</blockquote>
+<h4 id="advanced-encryption-standard-aes">Advanced Encryption Standard (AES)</h4>
+<p>The Advanced Encryption Standard Algorithm Validation Suite (AESAVS) <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> is the swiss knife for testing the Rijndael algorithm. It provides the basic configuration and specifies the procedures involved in validating implementations of it. It provides the data for the KAT and MMT (Multi-block Message Test) and the implementation of the MCT algorithm used by this suite, which consists of iterating over and over the cipher text of the previous iteration. It supports the ECB, OCB, OFB CFB &amp; CTR modes of AES, the last three will be analyzed in the stream cipher section. Besides, I add to my test vectors the <a href="https://www.cosic.esat.kuleuven.be/nessie/testvectors/">NESSIE test vectors</a> which have a wide range of cryptographic algorithms and their respective MCT test. Example of these vectors:</p>
+<pre><code>Primitive Name: Rijndael
+Key size: 256 bits
+Block size: 256 bits
+
+Test vectors -- set 1
+
+Set 1, vector#  0:
+                       
+                      key=80000000000000000000000000000000
+                           00000000000000000000000000000000
+                     
+                     plain=00000000000000000000000000000000
+                           00000000000000000000000000000000
+                    
+                    cipher=E62ABCE069837B65309BE4EDA2C0E149
+                           FE56C07B7082D3287F592C4A4927A277
+                 decrypted=00000000000000000000000000000000
+                           00000000000000000000000000000000
+        Iterated 100 times=F8E93A8D243B1A7C65A8D61BB142E639
+                           8966FC09315B7CCD2DC3E36BC08675E9
+       Iterated 1000 times=16990D2F01F21A61678538BD10F1F231
+                           A1DCB8D4E73CDDF6A33B5B5FA2368E14
+</code></pre>
+<p>Even if, after doing all these testing you are not fully confident that the libraries you are using or even your own implementation of it are 100% secure you can always rely on FIPS 140-2 tested libraries. They are heavily tested, and they have been proven to be secure through the use of the last years. They have good development watching their backs, you can find a comparison of the different libraries here <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
+<h3 id="aes---ecb-avoid-using-it">AES - ECB, avoid using it!!!!</h3>
+<p>The main reason not to use ECB mode encryption is that it&rsquo;s not <a href="https://en.wikipedia.org/wiki/Semantic_security">semantically secure</a> — that is, merely observing ECB-encrypted ciphertext can leak information about the plaintext (even beyond its length, which all encryption schemes accepting arbitrarily long plaintexts will leak to some extent).
+Specifically, the problem with ECB mode is that encrypting the same block (of 8 or 16 bytes, or however large the block size of the underlying cipher is) of plaintext using ECB mode always yields the same block of ciphertext. This can allow an attacker to:</p>
+<ul>
+<li>Detect whether two ECB-encrypted messages are identical;</li>
+<li>Detect whether two ECB-encrypted messages share a common prefix;</li>
+<li>Detect whether two ECB-encrypted messages share other common substrings, as long as those substrings are aligned at block boundaries; or</li>
+<li>Detect whether (and where) a single ECB-encrypted message contains repetitive data (such as long runs of spaces or null bytes, repeated header fields or coincidentally repeated phrases in text).</li>
+</ul>
+<h2 id="stream-ciphers">Stream ciphers</h2>
+<p>According to Wikipedia, a stream cipher is a symmetric key cipher where plaintext digits are combined with a pseudorandom cipher digit stream (keystream). In a stream cipher, each plaintext digit is encrypted one at a time with the corresponding digit of the keystream, to give a digit of the ciphertext stream. Since encryption of each digit is dependent on the current state of the cipher, it is also known as state cipher. In practice, a digit is typically a bit and the combining operation is an exclusive-or (XOR).</p>
+<p>These types of ciphers are usually composed by a block cipher that encrypts the plaintext or IV before doing the xor with the previous output or plaintext or IV depending on the algorithm implementation. Right now, we have that there are three items to test, the block cipher encryption, the PRNG/Random number and the counter. The block cipher encryption was already cover by the previous section where I list some tests for it. So, we should go on with initialization vector which are the main source of errors.</p>
+<p><img src="/images/aes_ctr_encryption.png" alt="AES Counter Mode" title="AES Counter Mode"></p>
+<h4 id="initizalition-vectors---iv">Initizalition Vectors - IV</h4>
+<p>The initialization vector (IV) or starting variable (SV) is an input to a cryptographic primitive being used to provide the initial state. The IV is typically required to be random or pseudorandom, but sometimes an IV only needs to be unpredictable or unique. The use of a repeated or predictable nonce is key in most of the encryption algorithms that use IVs, but there exists some algorithms like AES-GCM-SIV are nonce misuse resistant, however they are less common. Nonce misuses resistance has been defined by in the paper &ldquo;Deterministic Authenticated-EncryptionW by Rogaway and Shrimpton (2006)<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup> as the following:</p>
+<blockquote>
+<p>Informally, nonce-misuse resistance schemes ensure that a repeated random nonce doesn&rsquo;t result in plaintext compromise. In the case of a broken system where the attacker can cause repeated nonces, an attacker will only be able to discern if a particular message repeated, but they will not be able to decrypt the message.</p>
+</blockquote>
+<h5 id="birthdate-paradox">Birthdate paradox</h5>
+<p>It is considered a good pratice to have a good random generator, even tough if we are using a 128 bit IV completely that is
+<strong>RANDOM</strong> we should change the key to prevent what is called the birtdate paradox. Taking the AES-CTR algorithm for example, if we
+have a 128-bit IV we should change our key after $$\sqrt{2^{128}} = 2^{64} $$ executions. How did I get that number? Quite simple, by the
+birthdate paradox, after $$\sqrt{n}$$ is roughly the number of executions which there is a 50% chance that the next random number has
+already been chosen as the nonce. Hence, we should change the key after $$\sqrt{blocksize} = nº executions$$</p>
+<p>Alternatively, you can use an LFSR based solution to generate the nonce deterministically.
+Thre are two different options regarding the nonce generation but no well defined criteria on which one is preferible so let&rsquo;s take a look at the NIST SP 800-38A, Recommendation for Block Cipher Modes of Operation<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>:</p>
+<blockquote>
+<p>For AES-CTR<sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup> the following is said:
+CTR mode requires a unique counter block for each plaintext block that
+is ever encrypted under a given key, across all messages. If, contrary to this requirement, a
+counter block is used repeatedly, then the confidentiality of all of the plaintext blocks
+corresponding to that counter block may be compromised. In particular, if any plaintext block
+that is encrypted using a given counter block is known, then the output of the forward cipher
+function can be determined easily from the associated ciphertext block. This output allows any
+other plaintext blocks that are encrypted using the same counter block to be easily recovered
+from their associated ciphertext blocks.
+There are two aspects to satisfying the uniqueness requirement. First, an incrementing function
+for generating the counter blocks from any initial counter block can ensure that counter blocks do
+not repeat within a given message. Second, the initial counter blocks, must be chosen to
+ensure that counters are unique across all messages that are encrypted under the given key.</p>
+</blockquote>
+<p>In the other hand, for AES CBC and OCF the following is said:</p>
+<blockquote>
+<p>For the CBC and CFB modes, the IVs must be unpredictable. In particular, for any given
+plaintext, it must not be possible to predict the IV that will be associated to the plaintext in
+advance of the generation of the IV.
+There are two recommended methods for generating unpredictable IVs. The first method is to
+apply the forward cipher function, under the same key that is used for the encryption of the
+plaintext, to a nonce. The nonce must be a data block that is unique to each execution of the
+encryption operation. For example, the nonce may be a counter, as described in Appendix B, or
+a message number. The second method is to generate a random data block using a FIPS approved random number generator.</p>
+</blockquote>
+<p>Refering also to the paper &ldquo;Evaluation of Some Blockcipher Modes of Operation&rdquo;<sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup> for CBC &amp; CTR mode:</p>
+<blockquote>
+<p>An IV-based encryption scheme, the mode is secure as a probabilistic encryption
+scheme, achieving indistinguishability from random bits, assuming a random IV. As a secure nonce-based scheme, the mode can also be
+used as a <a href="https://en.wikipedia.org/wiki/Probabilistic_encryption">probabilistic encryption</a> scheme, with a random IV</p>
+</blockquote>
+<p>As we can see both of them do not impose the randomness in our implementation, but both of them mention that the IV&rsquo;s must be
+unpredictable.
+In my opinion, if you want your cipher to be a good cipher, there should always be some kind of randomness involved in the equation,
+reducing the predictability of your system, thus, making it more secure to cryptanalysis.</p>
+<p>Then, let&rsquo;s assume that we want to use random numbers in our implementation, how do we check that the quality of our
+random numbers if enough? The answer is randomness testing. Test that are develop in order to assure certain randomness in our RGN.</p>
+<h4 id="randomness-test">Randomness test</h4>
+<p>It is known that computers are good at deterministic processes but they can hardly fail when it comes to generating random or sufficiently random numbers<sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup>. Luckily, the NIST has published a Statistical test suite<sup id="fnref:10"><a href="#fn:10" class="footnote-ref" role="doc-noteref">10</a></sup> with its corresponding documentation[^11], which can be used to test the strength of your code regarding the PRNG. It includes 15 different tests, that I further explain in a future post.
+<em><strong>Here it is an example python implementation of the NIST test suite</strong></em><sup id="fnref:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup>
+I have used the first digits of the pi number as the input data.
+<img src="/images/test.PNG" alt="Test of randomness" title="Test of randomness"></p>
+<p>Having applied criteria found on the documentation and sucessed the tests above, let us have confidence that our implementation is secure nowadays. Even though, it is crucial to keep updating our knowledge on the subject &lsquo;cause we never know when our system could be outdated or compromised by a vulnerabilty. I hope you found this post interesting, thanks for your time!</p>
+<h2 id="references">References</h2>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://en.wikipedia.org/wiki/FIPS_140">https://en.wikipedia.org/wiki/FIPS_140</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard#Attacks_faster_than_brute_force">https://en.wikipedia.org/wiki/Data_Encryption_Standard#Attacks_faster_than_brute_force</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p><a href="https://csrc.nist.gov/csrc/media/projects/cryptographic-algorithm-validation-program/documents/aes/aesavs.pdf">https://csrc.nist.gov/csrc/media/projects/cryptographic-algorithm-validation-program/documents/aes/aesavs.pdf</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p><a href="https://en.wikipedia.org/wiki/Comparison_of_cryptography_libraries">https://en.wikipedia.org/wiki/Comparison_of_cryptography_libraries</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5" role="doc-endnote">
+<p><a href="https://web.cs.ucdavis.edu/~rogaway/papers/keywrap.pdf">https://web.cs.ucdavis.edu/~rogaway/papers/keywrap.pdf</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6" role="doc-endnote">
+<p><a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf">https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7" role="doc-endnote">
+<p><a href="https://datatracker.ietf.org/doc/html/rfc3686#page-2">https://datatracker.ietf.org/doc/html/rfc3686#page-2</a>&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8" role="doc-endnote">
+<p><a href="https://web.cs.ucdavis.edu/~rogaway/papers/modes.pdf">https://web.cs.ucdavis.edu/~rogaway/papers/modes.pdf</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9" role="doc-endnote">
+<p><a href="https://en.wikipedia.org/wiki/Randomness_test">https://en.wikipedia.org/wiki/Randomness_test</a>&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:10" role="doc-endnote">
+<p><a href="https://github.com/terrillmoore/NIST-Statistical-Test-Suite">https://github.com/terrillmoore/NIST-Statistical-Test-Suite</a>&#160;<a href="#fnref:10" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:11" role="doc-endnote">
+<p><a href="https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-22r1a.pdf">https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-22r1a.pdf</a>&#160;<a href="#fnref:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+        </p>
+    </div>
+</div>
+
+
+
+    
+
+        </main><footer class="footer">
+    <span>&copy; 2022 Sergio Valle | swhiteh4t </span>
+    <span>
+        Made with &#10084;&#65039; using <a target="_blank" href="https://github.com/526avijitgupta/gokarna">Gokarna</a>
+    </span>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+</footer>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SWHITEH4T</title>
+    <link>/</link>
+    <description>Recent content on SWHITEH4T</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 05 Jan 2022 22:13:14 +0100</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About Me</title>
+      <link>/aboutme/aboutme/</link>
+      <pubDate>Wed, 05 Jan 2022 22:13:14 +0100</pubDate>
+      
+      <guid>/aboutme/aboutme/</guid>
+      <description>Estudios  Estudié dos años en la facultad de informática de la Universidad de la Coruña (UDC) el grado en ingeniería informañtica impartido en lengua inglesa Mi tercer año lo estudiñe en el extranjero en la universidad Adam Mickiewicz University en Poznan El último año en la Universidad Politécnica de Madrid junto con las práticas en empresa  Experiencia  Tres meses como técnico en ciberseguridad para Clover Technologies. Realizando análisis de la seguridad de las funciones criptográficas.</description>
+    </item>
+    
+    <item>
+      <title>Introduction to testing cryptographic modules with AES encryption</title>
+      <link>/posts/testing_crypto_modules/</link>
+      <pubDate>Wed, 05 Jan 2022 19:49:45 +0100</pubDate>
+      
+      <guid>/posts/testing_crypto_modules/</guid>
+      <description>Disclaimer: I am not a FIPS evaluator, obviously this will not give you any FIPS certification nor the assurance that comes from that. If you really want to be sure that your system comply with this standard go and pay for it. This is just based on my experience
+In this post, I will make an overview on the different tests and criteria that I personally use to validate on cryptographic algorithms.</description>
+    </item>
+    
+  </channel>
+</rss>

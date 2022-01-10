@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on SWHITEH4T</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on SWHITEH4T</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 05 Jan 2022 19:49:45 +0100</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AES</title>
+      <link>/tags/aes/</link>
+      <pubDate>Wed, 05 Jan 2022 19:49:45 +0100</pubDate>
+      
+      <guid>/tags/aes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Crytography</title>
+      <link>/tags/crytography/</link>
+      <pubDate>Wed, 05 Jan 2022 19:49:45 +0100</pubDate>
+      
+      <guid>/tags/crytography/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Symmetric Encryption</title>
+      <link>/tags/symmetric-encryption/</link>
+      <pubDate>Wed, 05 Jan 2022 19:49:45 +0100</pubDate>
+      
+      <guid>/tags/symmetric-encryption/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Testing</title>
+      <link>/tags/testing/</link>
+      <pubDate>Wed, 05 Jan 2022 19:49:45 +0100</pubDate>
+      
+      <guid>/tags/testing/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
